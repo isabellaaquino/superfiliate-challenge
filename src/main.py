@@ -4,7 +4,7 @@ from starlette import status
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from src.routers.sensordata import router as equipments_router
+from src.routers.cart_item import router as equipments_router
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -20,10 +20,10 @@ origins = ["*"]
 def create_app():
     app = FastAPI()
 
-    # Adicionando middleware CORS para demonstração
+    # Allowing access from any origins for demonstration purposes
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,  # Liberando acesso de qualquer origem para demonstração
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -31,7 +31,7 @@ def create_app():
 
     routers = [
         equipments_router,
-        # Novas rotas podem adicionadas conforme demanda
+        # New routes can be added according to demand
     ]
 
     for router in routers:

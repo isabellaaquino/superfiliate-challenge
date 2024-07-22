@@ -1,18 +1,9 @@
-from sqlalchemy import Column, String, TIMESTAMP, Float, PrimaryKeyConstraint, orm
+from sqlalchemy import Column, Integer, ForeignKey
 from src.database import Base
 
 
 class CartItem(Base):
     __tablename__ = "cart_item"
 
-    name = Column(String, nullable=False)
-    price = Column(Float(precision=2), nullable=False)
-    collection = Column(String, nullable=False)
-
-    __table_args__ = (PrimaryKeyConstraint("name", "collection"),)
-
-    @orm.validates('price')
-    def validate_price(self, key, value):
-        if not 0 < value:
-            raise ValueError(f'Price should be bigger than 0. Given value {value}.')
-        return value
+    cart_id = Column(Integer, ForeignKey('cart.id'), primary_key=True)
+    cart_item_id = Column(Integer, ForeignKey('item.id'), primary_key=True)

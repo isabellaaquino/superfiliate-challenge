@@ -1,10 +1,11 @@
+from functools import lru_cache
 import pathlib
 
 from starlette import status
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from src.routers.cart_item import router as equipments_router
+from routers.cart import router as cart_router
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -30,7 +31,7 @@ def create_app():
     )
 
     routers = [
-        equipments_router,
+        cart_router,
         # New routes can be added according to demand
     ]
 

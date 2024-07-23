@@ -1,4 +1,3 @@
-from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
@@ -17,8 +16,9 @@ class ItemSchema(BaseModel):
     class Config:
         from_attributes = True
 
-    @field_validator('price')
-    def prevent_zero(self, value):
-        if value < 0: 
-            raise ValueError(f'Price should be bigger than 0. Given value {value}.')
+    @field_validator("price")
+    @classmethod
+    def prevent_zero(cls, value):
+        if value < 0:
+            raise ValueError(f"Price should be bigger than 0. Given value {value}.")
         return value

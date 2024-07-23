@@ -13,16 +13,16 @@ from src.main import create_app
 
 load_dotenv(dotenv_path=pathlib.Path(__file__).parent.resolve())
 
-# Conexão com banco Postgres através da lib sqlalchemy
+# Connection with db through sqlalchemy
 engine = create_engine(os.environ.get("SQLALCHEMY_TEST_DATABASE_URL"))
 TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 @pytest.fixture(scope="session")
 def test_db():
-    Base.metadata.create_all(bind=engine)  # Cria tabela
+    Base.metadata.create_all(bind=engine)
     yield
-    Base.metadata.drop_all(bind=engine)  # Apaga tabela
+    Base.metadata.drop_all(bind=engine)
 
 
 @pytest.fixture(scope="function")

@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 from schemas.itemschema import ItemSchema
 
 
+# PRO: Using Pydantic to validate the input data.
 class CartSchema(BaseModel):
     """
     Base model mirroring the database model
@@ -18,6 +19,7 @@ class CartSchema(BaseModel):
     class Config:
         from_attributes = True
 
+    # PRO: Validation for the reference id.
     @field_validator("reference")
     @classmethod
     def validate_reference(cls, reference):

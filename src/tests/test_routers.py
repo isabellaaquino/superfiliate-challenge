@@ -3,6 +3,9 @@ import pytest
 
 from schemas.config.rules import CollectionDiscountConfig
 
+# PRO: Unit tests with different scenarios.
+# Maybe one improvement here would be adding more edge-cases to the test suite,
+# something like a list with 100 items, etc.
 
 def override_config_discount():
     data = {

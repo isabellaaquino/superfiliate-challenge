@@ -15,6 +15,7 @@ router = APIRouter(prefix="/cart")
 @router.post("/checkout", status_code=status.HTTP_200_OK)
 async def checkout_cart(
     cart_api: CartAPISchema,
+    # Question: Curious to understand the use case of receiving the config as a dependency here.
     config: CollectionDiscountConfig = Depends(get_config),
 ) -> JSONResponse:
     """
@@ -28,6 +29,7 @@ async def checkout_cart(
         JSONResponse: JSON containing the final price and unit prices.
     """
 
+    # PRO: Using the DiscountService to calculate the final price, leaving a clean route function.
     price_dict = DiscountService(config=config).calculate_discounted_price(
         cart_api.cart.lineItems
     )

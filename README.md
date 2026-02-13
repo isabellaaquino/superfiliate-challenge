@@ -36,6 +36,7 @@
    To run your FastAPI application locally:
 
    ```bash
+   cd src
    uvicorn main:app --reload
    ```
 
@@ -54,6 +55,7 @@ Example of the default configuration:
   "discount_rule": {
     "min_qty": 2,
     "discount_percentage": 5.0
+    "max_discount": 25
   },
   "excluded_collections": ["KETO"]
 }

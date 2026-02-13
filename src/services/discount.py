@@ -6,55 +6,62 @@ from schemas.itemschema import ItemSchema
 
 class DiscountService:
     def __init__(self, config: CollectionDiscountConfig):
+        # PRO: Discount service can work with multiple discount configurations.
+        # One possible improvement here would be to allow the service deal with any type of discount,
+        # and not only CollectionDiscountConfig. (minimum quantity + discount percentage). Something
+        # we could easily ply like this:
+        #
+        # ✅ applied_discount = config.apply_discount(eligible_items)
+        #
+        # It would also improve the flexibility of the service, allowing it to be used in other contexts.
         self.config = config
         self.quantization = Decimal("0.01")
 
     def calculate_discounted_price(self, line_items: List[ItemSchema]) -> dict:
         items = []
-        eligible_items = [
-            item
-            for item in line_items
-            if item.collection not in self.config.excluded_collections
-        ]
-        ineligible_items = [
-            item
-            for item in line_items
-            if item.collection in self.config.excluded_collections
-        ]
+        # ✅ CON: Could create the lists of eligible_items and ineligible_items with a single loop.
+        eligible_items = []
+        ineligible_items = []
+        for item in line_items:
+            if item.collection not in self.config.excluded_collections:
+                eligible_items.append(item)
+            else:
+                ineligible_items.append(item)
 
-        rule = self.config.discount_rule
+        applied_discount = self.config.apply_discount(eligible_items)
 
-        total_price = Decimal(0)
-
-        if eligible_items:
-            # Discount starts from the minimum quantity
-            eligible_count = len(eligible_items) - (rule.min_qty - 1)
-            discount = eligible_count * rule.discount_percentage
-            applied_discount = Decimal((100 - discount) / 100).quantize(
-                self.quantization
+        # ✅ CON: Could use a map instead of a loop to create the items list.
+        items = list(
+            map(
+                lambda item: self.process_item(
+                    item, applied_discount, ineligible_items
+                ),
+                line_items,
             )
+        )
 
-            for item in eligible_items:
-                discounted_price = (item.price * applied_discount).quantize(
-                    self.quantization
-                )
-                items.append(
-                    {
-                        "name": item.name,
-                        "collection": item.collection,
-                        "price": float(discounted_price),
-                    }
-                )
-                total_price += discounted_price
+        # ❌ PRO: Re-using the total_price variable to calculate the total price,
+        # avoiding an extra iteration at the end.
 
-        for item in ineligible_items:
-            items.append(
-                {
-                    "name": item.name,
-                    "collection": item.collection,
-                    "price": float(item.price),
-                }
-            )
-            total_price += item.price
+        # With the usage of map, total price had to be calculated through an extra iteration
+        total_price = sum(item["final_price"] for item in items)
 
-        return {"cart": {"price": float(total_price), "items": items}}
+        return {
+            "cart": {
+                "price": float(Decimal(total_price).quantize(self.quantization)),
+                "items": items,
+            }
+        }
+
+    def process_item(self, item, applied_discount, inelegible_items):
+        # Removing discount in case the item is ineligible
+        if item in inelegible_items:
+            applied_discount = 1
+        discounted_price = (item.price * applied_discount).quantize(self.quantization)
+        return {
+            "name": item.name,
+            "collection": item.collection,
+            # ✅ CON: Could keep the original price and add a new field for the discounted price.
+            "price": float(item.price.quantize(self.quantization)),
+            "final_price": float(discounted_price),
+        }

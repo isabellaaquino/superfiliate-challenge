@@ -3,6 +3,7 @@ from decimal import Decimal
 from pydantic import BaseModel, Field, field_validator
 
 
+# PRO: Using Pydantic to validate the input data.
 class ItemSchema(BaseModel):
     """
     Base model mirroring the database model
@@ -16,6 +17,7 @@ class ItemSchema(BaseModel):
     class Config:
         from_attributes = True
 
+    # PRO: Price validation to prevent negative prices.
     @field_validator("price")
     @classmethod
     def prevent_zero(cls, value):

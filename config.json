@@ -1,7 +1,8 @@
 {
     "discount_rule": {
         "min_qty": 2,
-        "discount_percentage": 5.0
+        "discount_percentage": 5.0,
+        "max_discount": 25
     },
     "excluded_collections": [
         "KETO"
